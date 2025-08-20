@@ -1,0 +1,21 @@
+apiVersion: v2
+name: vpn-commander
+description: A Telegram bot for managing VPN routing on Xkeen routers
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+home: https://github.com/staners2/vpn-commander
+sources:
+  - https://github.com/staners2/vpn-commander
+maintainers:
+  - name: VPN Commander Team
+    email: maintainers@example.com
+keywords:
+  - telegram
+  - bot
+  - vpn
+  - xkeen
+  - router
+  - proxy
+annotations:
+  category: Networking

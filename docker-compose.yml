@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  vpn-commander:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vpn-commander
+    restart: unless-stopped
+    
+    environment:
+      # Telegram Bot Configuration
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - AUTH_CODE=${AUTH_CODE}
+      
+      # Router SSH Configuration
+      - ROUTER_HOST=${ROUTER_HOST:-192.168.1.1}
+      - ROUTER_USERNAME=${ROUTER_USERNAME:-admin}
+      - ROUTER_PASSWORD=${ROUTER_PASSWORD}
+      
+      # Optional: Custom Xray config path
+      - XRAY_CONFIG_PATH=${XRAY_CONFIG_PATH:-/opt/etc/xray/configs/05_routing.json}
+      
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    
+    # Security settings
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    user: "1000:1000"
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
+        reservations:
+          cpus: '0.05'
+          memory: 64M
+    
+    # Network access (uncomment if needed)
+    # ports:
+    #   - "8080:8080"  # Health check endpoint
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

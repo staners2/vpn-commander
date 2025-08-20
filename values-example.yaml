@@ -1,0 +1,100 @@
+# Example configuration for VPN Commander Helm deployment
+# Copy this file to values.yaml and configure according to your environment
+
+image:
+  repository: ghcr.io/your-org/vpn-commander
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# Environment variables (non-sensitive)
+env:
+  # Router configuration
+  ROUTER_HOST: "192.168.1.1"
+  ROUTER_USERNAME: "admin"
+  
+  # Optional: Custom Xray config path
+  # XRAY_CONFIG_PATH: "/opt/etc/xray/configs/05_routing.json"
+  
+  # Logging
+  LOG_LEVEL: "info"
+
+# Secrets configuration (sensitive data)
+secrets:
+  create: true
+  data:
+    # Get your bot token from @BotFather on Telegram
+    TELEGRAM_BOT_TOKEN: "1234567890:ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
+    
+    # Create a secure authentication code
+    AUTH_CODE: "your-secure-auth-code-here"
+    
+    # Router SSH password
+    ROUTER_PASSWORD: "your-router-password"
+
+# Resource limits
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# Enable health checks
+healthCheck:
+  enabled: true
+
+# Security context
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+
+# Service account
+serviceAccount:
+  create: true
+  annotations: {}
+
+# Network policy (optional - restrict network access)
+networkPolicy:
+  enabled: false
+  egress:
+    - to: []
+      ports:
+      - protocol: TCP
+        port: 443  # HTTPS for Telegram API
+      - protocol: TCP
+        port: 22   # SSH to router
+
+# Node selection (optional)
+nodeSelector: {}
+
+# Tolerations (optional)
+tolerations: []
+
+# Affinity rules (optional)
+affinity: {}
+
+# Persistence for logs (optional)
+persistence:
+  enabled: false
+  size: 1Gi
+
+# Autoscaling (optional)
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
