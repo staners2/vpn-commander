@@ -5,7 +5,7 @@ image:
   repository: ghcr.io/staners2/vpn-commander
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v1.0.0"
+  tag: "1.0.0"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -32,14 +32,6 @@ env:
   # Router SSH password - configure this value
   ROUTER_PASSWORD: "your_router_password"
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  name: ""
-
 podAnnotations: {}
 
 podSecurityContext:
@@ -57,12 +49,6 @@ securityContext:
   runAsNonRoot: true
   runAsUser: 1000
   runAsGroup: 1000
-
-# Service configuration (for health checks if needed)
-service:
-  enabled: false
-  type: ClusterIP
-  port: 8080
 
 # Health checks configuration
 healthCheck:
@@ -92,33 +78,8 @@ resources:
     cpu: 50m
     memory: 64Mi
 
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 3
-  targetCPUUtilizationPercentage: 80
-  targetMemoryUtilizationPercentage: 80
-
 nodeSelector: {}
 
 tolerations: []
 
 affinity: {}
-
-
-# Network policies
-networkPolicy:
-  enabled: false
-  ingress: []
-  egress:
-    - to: []
-      ports:
-      - protocol: TCP
-        port: 443  # HTTPS for Telegram API
-      - protocol: TCP
-        port: 22   # SSH to router
-
-# Pod disruption budget
-podDisruptionBudget:
-  enabled: false
-  minAvailable: 1

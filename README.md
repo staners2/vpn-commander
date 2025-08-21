@@ -307,7 +307,7 @@ Available tags:
 
 **Pull specific version:**
 ```bash
-docker pull ghcr.io/staners2/vpn-commander:v1.0.0
+docker pull ghcr.io/staners2/vpn-commander:1.0.0
 ```
 
 **Install specific chart version:**
@@ -412,7 +412,7 @@ cp vpn-commander/values.yaml values.prd.yaml
 # - Set TELEGRAM_BOT_TOKEN from @BotFather
 # - Set AUTH_CODE for secure bot authentication
 # - Set ROUTER_HOST, ROUTER_USERNAME, ROUTER_PASSWORD
-# - Update image.tag to specific version (e.g., "v1.0.0")
+# - Update image.tag to specific version (e.g., "1.0.0")
 # - Adjust resource limits for production load
 # - Configure nodeSelector, tolerations if needed
 
