@@ -21,6 +21,11 @@ go.work
 .env
 .env.local
 
+# Production values with sensitive data
+values.prd*.yaml
+values.prod*.yaml
+values.production*.yaml
+
 # IDE files
 .vscode/
 .idea/
