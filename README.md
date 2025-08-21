@@ -99,36 +99,16 @@ The bot consists of several components:
 helm pull oci://ghcr.io/staners2/vpn-commander/charts/vpn-commander --untar
 
 # Create values file
-cat > production-values.yaml << EOF
-env:
-  TELEGRAM_BOT_TOKEN: "1234567890:ABCdefGHIjklMNOpqrSTUvwxYZ123456789"
-  AUTH_CODE: "your-secure-auth-code"
-  ROUTER_HOST: "192.168.1.1"
-  ROUTER_USERNAME: "admin"
-  ROUTER_PASSWORD: "your-router-password"
-  LOG_LEVEL: "info"
+cp vpn-commander/values.yaml values.prd.yaml
 
-image:
-  repository: ghcr.io/staners2/vpn-commander
-  tag: "latest"
-
-resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
-    cpu: 50m
-    memory: 64Mi
-
-healthCheck:
-  enabled: true
-
-nodeSelector:
-  kubernetes.io/os: linux
-EOF
+# Edit values.prd.yaml with your configuration:
+# - Set TELEGRAM_BOT_TOKEN from @BotFather
+# - Set AUTH_CODE for bot authentication  
+# - Set ROUTER_HOST, ROUTER_USERNAME, ROUTER_PASSWORD
+# - Adjust other settings as needed
 
 # Install the chart
-helm install vpn-commander vpn-commander/ -f production-values.yaml
+helm install vpn-commander vpn-commander/ -f values.prd.yaml
 
 # Check deployment
 kubectl get pods -l app.kubernetes.io/name=vpn-commander
@@ -426,58 +406,19 @@ kubectl create namespace vpn-commander
 helm pull oci://ghcr.io/staners2/vpn-commander/charts/vpn-commander --untar
 
 # 3. Create production values
-cat > production-values.yaml << EOF
-env:
-  TELEGRAM_BOT_TOKEN: "1234567890:ABCdefGHIjklMNOpqrSTUvwxYZ123456789"
-  AUTH_CODE: "production-secure-code-2024"
-  ROUTER_HOST: "192.168.1.1"
-  ROUTER_USERNAME: "admin"
-  ROUTER_PASSWORD: "secure-router-password"
-  LOG_LEVEL: "info"
+cp vpn-commander/values.yaml values.prd.yaml
 
-image:
-  repository: ghcr.io/staners2/vpn-commander
-  tag: "latest"
-  pullPolicy: Always
-
-resources:
-  limits:
-    cpu: 200m
-    memory: 256Mi
-  requests:
-    cpu: 100m
-    memory: 128Mi
-
-healthCheck:
-  enabled: true
-  livenessProbe:
-    initialDelaySeconds: 30
-    periodSeconds: 10
-  readinessProbe:
-    initialDelaySeconds: 5
-    periodSeconds: 5
-
-serviceAccount:
-  create: true
-
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 1000
-  readOnlyRootFilesystem: true
-
-nodeSelector:
-  kubernetes.io/os: linux
-
-# Optional: Resource scaling
-# autoscaling:
-#   enabled: true
-#   minReplicas: 1
-#   maxReplicas: 3
-EOF
+# Edit values.prd.yaml with your production configuration:
+# - Set TELEGRAM_BOT_TOKEN from @BotFather
+# - Set AUTH_CODE for secure bot authentication
+# - Set ROUTER_HOST, ROUTER_USERNAME, ROUTER_PASSWORD
+# - Update image.tag to specific version (e.g., "v1.0.0")
+# - Adjust resource limits for production load
+# - Configure nodeSelector, tolerations if needed
 
 # 4. Deploy
 helm install vpn-commander vpn-commander/ \
-  -f production-values.yaml \
+  -f values.prd.yaml \
   --namespace vpn-commander
 
 # 5. Verify deployment
@@ -499,7 +440,7 @@ curl http://localhost:8080/health
 
 # Update deployment
 helm upgrade vpn-commander vpn-commander/ \
-  -f production-values.yaml \
+  -f values.prd.yaml \
   --namespace vpn-commander
 
 # Rollback if needed
