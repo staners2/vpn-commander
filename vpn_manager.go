@@ -252,3 +252,22 @@ func (vm *VPNManager) SetConfigPath(path string) {
 	vm.configPath = path
 	vm.logger.WithField("config_path", path).Info("Configuration path updated")
 }
+
+// StartVPNService starts the VPN service using xkeen command
+func (vm *VPNManager) StartVPNService() error {
+	vm.logger.Info("Starting VPN service using xkeen")
+	return vm.sshClient.StartService()
+}
+
+// StopVPNService stops the VPN service using xkeen command
+func (vm *VPNManager) StopVPNService() error {
+	vm.logger.Info("Stopping VPN service using xkeen")
+	return vm.sshClient.StopService()
+}
+
+// GetVPNServiceStatus gets the current VPN service status using xkeen command
+func (vm *VPNManager) GetVPNServiceStatus() (string, error) {
+	vm.logger.Debug("Getting VPN service status using xkeen")
+	return vm.sshClient.GetServiceStatus()
+}
+

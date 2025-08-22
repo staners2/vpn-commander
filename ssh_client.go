@@ -141,6 +141,75 @@ func (s *SSHClient) RestartService() error {
 	return nil
 }
 
+// StartService starts Xray service using xkeen command
+func (s *SSHClient) StartService() error {
+	command := "export PATH=/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin:/usr/sbin:/usr/bin:/sbin:/bin && cd /opt/etc/xray/configs && xkeen -start"
+	output, err := s.ExecuteCommand(command)
+	if err != nil {
+		return fmt.Errorf("failed to start Xray service: %w (output: %s)", err, output)
+	}
+
+	s.logger.Info("Xray service started successfully using xkeen")
+	return nil
+}
+
+// StopService stops Xray service using xkeen command
+func (s *SSHClient) StopService() error {
+	command := "export PATH=/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin:/usr/sbin:/usr/bin:/sbin:/bin && cd /opt/etc/xray/configs && xkeen -stop"
+	output, err := s.ExecuteCommand(command)
+	if err != nil {
+		return fmt.Errorf("failed to stop Xray service: %w (output: %s)", err, output)
+	}
+
+	s.logger.Info("Xray service stopped successfully using xkeen")
+	return nil
+}
+
+// GetServiceStatus gets Xray service status using xkeen command
+func (s *SSHClient) GetServiceStatus() (string, error) {
+	command := "export PATH=/opt/sbin:/opt/bin:/opt/usr/sbin:/opt/usr/bin:/usr/sbin:/usr/bin:/sbin:/bin && cd /opt/etc/xray/configs && xkeen -status"
+	s.logger.WithFields(logrus.Fields{
+		"host":     s.host,
+		"username": s.username,
+		"command":  command,
+	}).Info("Executing xkeen status command")
+	
+	output, err := s.ExecuteCommand(command)
+	if err != nil {
+		return "", fmt.Errorf("failed to get Xray service status: %w (output: %s)", err, output)
+	}
+
+	// Log raw output first
+	s.logger.WithFields(logrus.Fields{
+		"command":    command,
+		"raw_output": output,
+		"raw_bytes":  []byte(output),
+		"raw_length": len(output),
+	}).Info("Raw xkeen -status output")
+	
+	// Filter out the "ps: applet not found" error from xkeen output
+	// Only keep lines that contain actual status information
+	lines := strings.Split(output, "\n")
+	var cleanLines []string
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line != "" && 
+		   !strings.Contains(line, "ps: applet not found") && 
+		   !strings.Contains(line, "applet not found") {
+			cleanLines = append(cleanLines, line)
+		}
+	}
+	
+	cleanOutput := strings.Join(cleanLines, "\n")
+	s.logger.WithFields(logrus.Fields{
+		"clean_output": cleanOutput,
+		"clean_bytes":  []byte(cleanOutput),
+		"clean_length": len(cleanOutput),
+	}).Info("Cleaned xkeen -status output")
+	return cleanOutput, nil
+}
+
+
 // CheckConnection verifies if the SSH connection is still active
 func (s *SSHClient) CheckConnection() error {
 	if s.client == nil {
