@@ -454,20 +454,20 @@ func (tb *TelegramBot) sendUnauthorizedMessage(chatID int64) {
 	tb.sendMessage(msg)
 }
 
-// createMainKeyboard creates reply keyboard with VPN control buttons grouped by functionality
+// createMainKeyboard creates UX-optimized keyboard with logical information-action flow
 func (tb *TelegramBot) createMainKeyboard() tgbotapi.ReplyKeyboardMarkup {
 	return tgbotapi.NewReplyKeyboard(
-		// Status monitoring group
+		// Information Layer - Check status before making decisions
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton(CommandStatus),
 			tgbotapi.NewKeyboardButton(CommandServiceStatus),
 		),
-		// VPN routing configuration group  
+		// Traffic Control Layer - Core routing decisions
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton(CommandEnableVPN),
 			tgbotapi.NewKeyboardButton(CommandDisableVPN),
 		),
-		// Service control group
+		// Service Control Layer - Power management
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton(CommandStartVPN),
 			tgbotapi.NewKeyboardButton(CommandStopVPN),
